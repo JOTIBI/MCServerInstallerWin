@@ -147,6 +147,15 @@ class MinecraftServerGUI(tk.Tk):
                 print(f"Fehler beim Laden der Minecraft-Versionen: {e}")
         threading.Thread(target=run).start()
 
+    def on_minecraft_version_change(self, event=None):
+        """Handle changes in the selected Minecraft version."""
+        server_type = self.server_type.get().lower()
+        mc_version = self.mc_version_cb.get()
+        if server_type == "forge":
+            self.fetch_forge_versions(mc_version)
+        elif server_type == "fabric":
+            self.fetch_fabric_versions(mc_version)
+
     def filter_versions_by_server_type(self, server_type):
         if server_type == "vanilla":
             # alle inkl. snapshots/previews
