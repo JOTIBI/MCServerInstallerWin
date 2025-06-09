@@ -7,6 +7,7 @@ import urllib.request
 import threading
 import json
 
+
 class ModrinthModManager(ttk.Frame):
     def __init__(self, parent, install_path_var):
         super().__init__(parent)
@@ -18,17 +19,35 @@ class ModrinthModManager(ttk.Frame):
         ttk.Label(self, text="Installierte Mods:").pack(pady=(10, 0))
         self.installed_list = tk.Listbox(self, height=10)
         self.installed_list.pack(fill="both", expand=True, padx=10)
-        ttk.Button(self, text="Mods-Ordner öffnen", command=self.open_mod_folder).pack(pady=5)
+        ttk.Button(
+            self,
+            text="Mods-Ordner öffnen",
+            command=self.open_mod_folder,
+        ).pack(pady=5)
 
         ttk.Separator(self).pack(fill="x", pady=5)
-        ttk.Label(self, text="Modrinth Mod-Suche & Installation:").pack(pady=(10, 5))
+        ttk.Label(
+            self,
+            text="Modrinth Mod-Suche & Installation:",
+        ).pack(pady=(10, 5))
         self.search_entry = ttk.Entry(self)
         self.search_entry.pack(fill="x", padx=10)
-        ttk.Button(self, text="Mod suchen & installieren", command=self.search_and_install_modrinth).pack(pady=5)
+        ttk.Button(
+            self,
+            text="Mod suchen & installieren",
+            command=self.search_and_install_modrinth,
+        ).pack(pady=5)
 
         ttk.Separator(self).pack(fill="x", pady=5)
-        ttk.Label(self, text="Manuell Mods einfügen (.jar Dateien)").pack(pady=(10, 0))
-        ttk.Button(self, text="Dateien auswählen und kopieren", command=self.manual_add_mods).pack(pady=5)
+        ttk.Label(
+            self,
+            text="Manuell Mods einfügen (.jar Dateien)",
+        ).pack(pady=(10, 0))
+        ttk.Button(
+            self,
+            text="Dateien auswählen und kopieren",
+            command=self.manual_add_mods,
+        ).pack(pady=5)
 
     def open_mod_folder(self):
         mods_path = os.path.join(self.install_path_var.get(), "mods")
@@ -38,7 +57,9 @@ class ModrinthModManager(ttk.Frame):
             messagebox.showerror("Fehler", "Mods-Ordner nicht gefunden")
 
     def manual_add_mods(self):
-        files = filedialog.askopenfilenames(filetypes=[("Java Archive", "*.jar")])
+        files = filedialog.askopenfilenames(
+            filetypes=[("Java Archive", "*.jar")]
+        )
         mods_dir = os.path.join(self.install_path_var.get(), "mods")
         os.makedirs(mods_dir, exist_ok=True)
         for f in files:
@@ -51,15 +72,22 @@ class ModrinthModManager(ttk.Frame):
             if not query:
                 return
             try:
-                url = f"https://api.modrinth.com/v2/search?query={query}"
+                url = (
+                    f"https://api.modrinth.com/v2/search?query={query}"
+                )
                 with urllib.request.urlopen(url) as response:
                     data = json.loads(response.read().decode())
                 if not data["hits"]:
-                    messagebox.showinfo("Keine Ergebnisse", "Keine Mods gefunden.")
+                    messagebox.showinfo(
+                        "Keine Ergebnisse",
+                        "Keine Mods gefunden.",
+                    )
                     return
                 mod = data["hits"][0]
                 project_id = mod["project_id"]
-                project_url = f"https://api.modrinth.com/v2/project/{project_id}/version"
+                project_url = (
+                    f"https://api.modrinth.com/v2/project/{project_id}/version"
+                )
                 with urllib.request.urlopen(project_url) as response:
                     versions = json.loads(response.read().decode())
                 file_url = versions[0]["files"][0]["url"]
@@ -68,7 +96,10 @@ class ModrinthModManager(ttk.Frame):
                 filename = os.path.basename(file_url)
                 dest_path = os.path.join(mods_dir, filename)
                 urllib.request.urlretrieve(file_url, dest_path)
-                messagebox.showinfo("Mod installiert", f"{filename} installiert.")
+                messagebox.showinfo(
+                    "Mod installiert",
+                    f"{filename} installiert.",
+                )
                 self.update_installed_list()
             except Exception as e:
                 messagebox.showerror("Fehler", str(e))

@@ -2,6 +2,7 @@ import ctypes
 
 from gui_design_upgrade import apply_theme
 
+
 def setup_app(app):
     apply_theme(app)
     try:
